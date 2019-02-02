@@ -2,3 +2,17 @@
 
 #include "PuzzlePlatformsGameInstance.h"
 
+UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitializer & ObjectInitializer)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Constructor Called"));
+}
+
+void UPuzzlePlatformsGameInstance::Init()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Init Called"));
+}
+
+void UPuzzlePlatformsGameInstance::Host()
+{
+
+}
