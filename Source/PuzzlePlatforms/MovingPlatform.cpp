@@ -6,19 +6,33 @@ AMovingPlatform::AMovingPlatform()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	SetMobility(EComponentMobility::Movable);
+	if (HasAuthority())
+		SetMobility(EComponentMobility::Movable);
 
+}
+
+void AMovingPlatform::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (HasAuthority())
+	{
+		SetReplicates(true);
+		SetReplicateMovement(true);
+	}
 }
 
 void AMovingPlatform::Tick(float deltaTime)
 {
 	Super::Tick(deltaTime);
 
-	FVector newLocation = GetActorLocation();
-
-	float deltaMovement = (FMath::Sin((runningTime + deltaTime) * movementSpeed) - FMath::Sin(runningTime * movementSpeed));
-	newLocation.X += deltaMovement * movementAmount;
-	runningTime += deltaTime;
-	SetActorLocation(newLocation);
+	if (HasAuthority())
+	{
+		FVector newLocation = GetActorLocation();
+		//float deltaMovement = (FMath::Sin((runningTime + deltaTime) * movementSpeed) - FMath::Sin(runningTime * movementSpeed));
+		newLocation.X += deltaTime * movementAmount;
+		runningTime += deltaTime;
+		SetActorLocation(newLocation);
+	}
 
 }
