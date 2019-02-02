@@ -31,12 +31,35 @@ void AMovingPlatform::Tick(float deltaTime)
 
 	if (HasAuthority())
 	{
-		FVector newLocation = GetActorLocation();
-		FVector diffVector = (globalTargetLocation - globalStartLocation).GetSafeNormal();
+		/*FVector actorLocation = GetActorLocation();
+		FVector moveVector = vectorSwap == false ? (globalTargetLocation - globalStartLocation).GetSafeNormal() : (globalStartLocation - globalTargetLocation).GetSafeNormal();
+		FVector conditionalDifference = vectorSwap == false ? (globalTargetLocation - actorLocation).GetSafeNormal() : (globalStartLocation - actorLocation).GetSafeNormal();
+		
+		if (FVector::DotProduct(moveVector, conditionalDifference) < 0)
+		{
+			vectorSwap = !vectorSwap;
+		}
+
 		//float deltaMovement = (FMath::Sin((runningTime + deltaTime) * movementSpeed) - FMath::Sin(runningTime * movementSpeed));
-		newLocation += deltaTime * diffVector * movementSpeed;
+		actorLocation += deltaTime * moveVector * movementSpeed;
 		//runningTime += deltaTime;
-		SetActorLocation(newLocation);
+		SetActorLocation(actorLocation);*/
+
+
+		FVector location = GetActorLocation();
+		float journeyLength = (globalTargetLocation - globalStartLocation).Size();
+		float journeyTravelled = (location - globalStartLocation).Size();
+
+		if (journeyTravelled >= journeyLength)
+		{
+			FVector temp = globalStartLocation;
+			globalStartLocation = globalTargetLocation;
+			globalTargetLocation = temp;
+		}
+
+		FVector dir = (globalTargetLocation - globalStartLocation).GetSafeNormal();
+		location += deltaTime * movementSpeed * dir;
+		SetActorLocation(location);
 	}
 
 }

@@ -37,5 +37,6 @@ private:
 	float runningTime;
 	FVector globalTargetLocation;
 	FVector globalStartLocation;
+	bool vectorSwap = false;
 
 };
