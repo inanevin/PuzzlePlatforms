@@ -24,6 +24,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement)
 		float movementAmount;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, Meta = (MakeEditWidget = true))
+		FVector locationVector;
+
 protected:
 
 	virtual void BeginPlay() override;
@@ -32,5 +35,7 @@ protected:
 private:
 
 	float runningTime;
+	FVector globalTargetLocation;
+	FVector globalStartLocation;
 
 };
