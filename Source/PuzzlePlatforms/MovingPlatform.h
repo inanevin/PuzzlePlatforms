@@ -18,6 +18,9 @@ public:
 
 	AMovingPlatform();
 
+	void AddActiveTrigger();
+	void RemoveActiveTrigger();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement)
 		float movementSpeed;
 
@@ -33,6 +36,9 @@ protected:
 	virtual void Tick(float deltaTime) override;
 
 private:
+
+	UPROPERTY(EditAnywhere)
+		int activeTriggers = 1;
 
 	float runningTime;
 	FVector globalTargetLocation;
