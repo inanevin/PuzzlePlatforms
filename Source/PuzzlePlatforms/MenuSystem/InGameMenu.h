@@ -17,15 +17,19 @@ class PUZZLEPLATFORMS_API UInGameMenu : public UUserWidget
 
 public:
 
+
 	void SetMenuInterface(IMenuInterface* mi);
-	void Setup();
-	void Disable();
+	void ActivateMenu();
+
+	UFUNCTION()
+	void DeactivateMenu();
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 		class UButton* cancelButton;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 		class UButton* mainMenuButton;
+
 
 protected:
 
@@ -34,5 +38,8 @@ protected:
 private:
 
 	IMenuInterface* menuInterface;
+
+	UFUNCTION()
 	void GoToMainMenu();
+
 };

@@ -3,7 +3,7 @@
 #include "InGameMenu.h"
 #include "Components/Button.h"
 
-void UInGameMenu::Setup()
+void UInGameMenu::ActivateMenu()
 {
 	AddToViewport(0);
 
@@ -15,13 +15,14 @@ void UInGameMenu::Setup()
 
 	if (!ensure(playerController != nullptr)) return;
 
-	FInputModeGameAndUI inputMode;
+	FInputModeUIOnly inputMode;
 
-	inputMode.SetWidgetToFocus(TakeWidget());
+	inputMode.SetWidgetToFocus(this->TakeWidget());
 	inputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 
 	playerController->SetInputMode(inputMode);
 	playerController->bShowMouseCursor = true;
+
 }
 
 void UInGameMenu::SetMenuInterface(IMenuInterface* mi)
@@ -35,8 +36,9 @@ bool UInGameMenu::Initialize()
 
 	if (!ensure(cancelButton != nullptr)) return false;
 	if (!ensure(mainMenuButton != nullptr)) return false;
+	UE_LOG(LogTemp, Warning, TEXT("Initialized!!!!!"));
 
-	cancelButton->OnClicked.AddDynamic(this, &UInGameMenu::Disable);
+	cancelButton->OnClicked.AddDynamic(this, &UInGameMenu::DeactivateMenu);
 	mainMenuButton->OnClicked.AddDynamic(this, &UInGameMenu::GoToMainMenu);
 
 	return true;
@@ -44,10 +46,12 @@ bool UInGameMenu::Initialize()
 
 void UInGameMenu::GoToMainMenu()
 {
+	DeactivateMenu();
+	if (!ensure(menuInterface != nullptr))return;
 	menuInterface->GoToMainMenu();
 }
 
-void UInGameMenu::Disable()
+void UInGameMenu::DeactivateMenu()
 {
 	RemoveFromViewport();
 
@@ -63,4 +67,7 @@ void UInGameMenu::Disable()
 
 	playerController->SetInputMode(inputMode);
 	playerController->bShowMouseCursor = false;
+
+
+	
 }

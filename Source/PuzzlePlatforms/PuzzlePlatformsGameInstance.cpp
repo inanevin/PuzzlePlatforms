@@ -41,25 +41,38 @@ void UPuzzlePlatformsGameInstance::LoadMenu()
 {
 	if (!ensure(menuClass != nullptr)) return;
 
-	UMainMenu* menu = CreateWidget<UMainMenu>(this, menuClass);
+	mainMenu = CreateWidget<UMainMenu>(this, menuClass);
 
-	if (!ensure(menu != nullptr)) return;
+	if (!ensure(mainMenu != nullptr)) return;
 
-	menu->Setup();
-	menu->SetMenuInterface(this);
+	mainMenu->Setup();
+	mainMenu->SetMenuInterface(this);
 }
 
 void UPuzzlePlatformsGameInstance::LoadInGameMenu()
 {
+	if (!ensure(inGameMenu != nullptr)) return;
 
 	if (!ensure(inGameMenu != nullptr)) return;
-	inGameMenuToggle = !inGameMenuToggle;
 
-	if (inGameMenuToggle)
-		inGameMenu->Setup();
+	inGameMenu = CreateWidget<UInGameMenu>(this, inGameMenuClass);
+	inGameMenu->ActivateMenu();
+	inGameMenu->SetMenuInterface(this);
+
+	//inGameMenuOpen = true;
+
+	/*if (!inGameMenuOpen)
+	{
+		inGameMenu = CreateWidget<UInGameMenu>(this, inGameMenuClass);
+
+		
+	}
 	else
-		inGameMenu->Disable();
-
+	{
+		inGameMenu->DeactivateMenu();
+		inGameMenuOpen = false;
+	}
+	*/
 }
 
 void UPuzzlePlatformsGameInstance::Host()
@@ -98,5 +111,9 @@ void UPuzzlePlatformsGameInstance::Join(const FString& address)
 
 void UPuzzlePlatformsGameInstance::GoToMainMenu()
 {
-	ReturnToMainMenu();
+
+	APlayerController* PlayerController = GetFirstLocalPlayerController();
+	if (!ensure(PlayerController != nullptr)) return;
+
+	PlayerController->ClientTravel("/Game/MenuSystem/MainMenu", ETravelType::TRAVEL_Absolute);
 }

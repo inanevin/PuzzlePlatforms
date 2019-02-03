@@ -42,5 +42,6 @@ private:
 	TSubclassOf<class UUserWidget> menuClass;
 	TSubclassOf<class UUserWidget> inGameMenuClass;
 	class UInGameMenu* inGameMenu;
-	bool inGameMenuToggle;
+	class UMainMenu* mainMenu;
+	bool inGameMenuOpen;
 };
