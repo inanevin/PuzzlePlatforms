@@ -30,6 +30,9 @@ public:
 		class UButton* backButton;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+		class UButton* exitButton;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 		class UWidgetSwitcher* switcher;
 	
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
@@ -62,6 +65,9 @@ private:
 
 	UFUNCTION()
 		void BackButtonClicked();
+
+	UFUNCTION()
+		void ExitButtonClicked();
 
 	IMenuInterface* menuInterface;
 };

@@ -15,6 +15,7 @@ bool UMainMenu::Initialize()
 	joinButton->OnClicked.AddDynamic(this, &UMainMenu::JoinButtonClicked);
 	joinIPButton->OnClicked.AddDynamic(this, &UMainMenu::JoinIPButtonClicked);
 	backButton->OnClicked.AddDynamic(this, &UMainMenu::BackButtonClicked);
+	exitButton->OnClicked.AddDynamic(this, &UMainMenu::ExitButtonClicked);
 	return true;
 }
 
@@ -58,6 +59,19 @@ void UMainMenu::JoinIPButtonClicked()
 void UMainMenu::BackButtonClicked()
 {
 	switcher->SetActiveWidget(MainMenu);
+}
+
+void UMainMenu::ExitButtonClicked()
+{
+	UWorld* world = GetWorld();
+
+	if (!ensure(world != nullptr))return;
+
+	APlayerController* playerController = world->GetFirstPlayerController();
+
+	if (!ensure(playerController != nullptr)) return;
+
+	playerController->ConsoleCommand(TEXT("quit"), true);
 }
 
 void UMainMenu::Setup()
