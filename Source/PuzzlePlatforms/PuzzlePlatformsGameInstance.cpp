@@ -6,6 +6,8 @@
 #include "UObject/ConstructorHelpers.h"
 #include "PlatformTrigger.h"
 #include "Blueprint/UserWidget.h"
+#include "MenuSystem/MainMenu.h"
+#include "MenuSystem/InGameMenu.h"
 
 UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitializer & ObjectInitializer)
 {
@@ -13,45 +15,57 @@ UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitiali
 
 	ConstructorHelpers::FClassFinder<APlatformTrigger> PlatformTrigger(TEXT("/Game/PuzzlePlatforms/BP_PlatformTrigger"));
 	ConstructorHelpers::FClassFinder<UUserWidget> MenuWidget(TEXT("/Game/MenuSystem/WBP_MainMenu"));
+	ConstructorHelpers::FClassFinder<UUserWidget> InGameMenuWidget(TEXT("/Game/MenuSystem/WBP_InGameMenu"));
 
 	if (!ensure(PlatformTrigger.Class != nullptr)) return;
 
 	UE_LOG(LogTemp, Warning, TEXT("Found class %s"), *PlatformTrigger.Class->GetName());
 
 	menuClass = MenuWidget.Class;
+	inGameMenuClass = InGameMenuWidget.Class;
+
+
 }
 
 void UPuzzlePlatformsGameInstance::Init()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Init Called"));
 	UE_LOG(LogTemp, Warning, TEXT("Found class %s"), *menuClass->GetName());
+
+	if (!ensure(inGameMenuClass != nullptr)) return;
+	inGameMenu = CreateWidget<UInGameMenu>(this, inGameMenuClass);
+	inGameMenu->SetMenuInterface(this);
 }
 
 void UPuzzlePlatformsGameInstance::LoadMenu()
 {
 	if (!ensure(menuClass != nullptr)) return;
 
-	UUserWidget* menu = CreateWidget<UUserWidget>(this, menuClass);
+	UMainMenu* menu = CreateWidget<UMainMenu>(this, menuClass);
 
 	if (!ensure(menu != nullptr)) return;
 
-	menu->AddToViewport(0);
+	menu->Setup();
+	menu->SetMenuInterface(this);
+}
 
-	APlayerController* playerController = GetFirstLocalPlayerController();
+void UPuzzlePlatformsGameInstance::LoadInGameMenu()
+{
 
-	if (!ensure(playerController != nullptr)) return;
+	if (!ensure(inGameMenu != nullptr)) return;
+	inGameMenuToggle = !inGameMenuToggle;
 
-	FInputModeUIOnly inputMode;
+	if (inGameMenuToggle)
+		inGameMenu->Setup();
+	else
+		inGameMenu->Disable();
 
-	inputMode.SetWidgetToFocus(menu->TakeWidget());
-	inputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-
-	playerController->SetInputMode(inputMode);
-	playerController->bShowMouseCursor = true;
 }
 
 void UPuzzlePlatformsGameInstance::Host()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Host Called"));
+
 	UEngine* engine = GetEngine();
 
 	if (!ensure(engine != nullptr)) return;
@@ -63,6 +77,7 @@ void UPuzzlePlatformsGameInstance::Host()
 	if (!ensure(world != nullptr)) return;
 
 	world->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen");
+
 }
 
 void UPuzzlePlatformsGameInstance::Join(const FString& address)
@@ -78,5 +93,10 @@ void UPuzzlePlatformsGameInstance::Join(const FString& address)
 	if (!ensure(engine != nullptr)) return;
 
 	playerController->ClientTravel(address, ETravelType::TRAVEL_Absolute);
-	
+
+}
+
+void UPuzzlePlatformsGameInstance::GoToMainMenu()
+{
+	ReturnToMainMenu();
 }

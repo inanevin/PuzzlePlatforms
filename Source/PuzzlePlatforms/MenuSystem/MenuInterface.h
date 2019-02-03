@@ -25,4 +25,6 @@ public:
 
 	virtual void Host() = 0;
 	virtual void Join(const FString& address) = 0;
+	virtual void GoToMainMenu() = 0;
+
 };

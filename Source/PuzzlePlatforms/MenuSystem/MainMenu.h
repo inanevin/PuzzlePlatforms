@@ -22,10 +22,32 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 		class UButton* joinButton;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+		class UButton* joinIPButton;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+		class UButton* backButton;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+		class UWidgetSwitcher* switcher;
 	
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+		class UEditableText* ipText;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+		class UWidget* MainMenu;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+		class UWidget* JoinMenu;
+
+	void SetMenuInterface(IMenuInterface* mi);
+	void Setup();
+
 protected:
 
 	virtual bool Initialize() override;
+	virtual void OnLevelRemovedFromWorld(ULevel* inLevel, UWorld* inWorld);
 
 private:
 
@@ -34,6 +56,12 @@ private:
 
 	UFUNCTION()
 		void JoinButtonClicked();
+
+	UFUNCTION()
+		void JoinIPButtonClicked();
+
+	UFUNCTION()
+		void BackButtonClicked();
 
 	IMenuInterface* menuInterface;
 };
