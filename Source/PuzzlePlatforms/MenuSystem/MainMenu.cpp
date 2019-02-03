@@ -83,7 +83,6 @@ void UMainMenu::Setup()
 	if (!ensure(world != nullptr)) return;
 
 	APlayerController* playerController = world->GetFirstPlayerController();
-
 	if (!ensure(playerController != nullptr)) return;
 
 	FInputModeUIOnly inputMode;
