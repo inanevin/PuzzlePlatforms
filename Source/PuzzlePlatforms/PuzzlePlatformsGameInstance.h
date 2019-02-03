@@ -21,10 +21,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void LoadMenu();
 
-	UFUNCTION(Exec)
+	UFUNCTION()
 		void Host();
 
-	UFUNCTION(Exec)
+	UFUNCTION()
 		void Join(const FString& address);
 	
 protected:
