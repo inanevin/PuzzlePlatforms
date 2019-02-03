@@ -21,6 +21,10 @@ APlatformTrigger::APlatformTrigger()
 	triggerVolume->OnComponentEndOverlap.AddDynamic(this, &APlatformTrigger::OnOverlapEnd);
 }
 
+APlatformTrigger::~APlatformTrigger()
+{
+	
+}
 // Called when the game starts or when spawned
 void APlatformTrigger::BeginPlay()
 {

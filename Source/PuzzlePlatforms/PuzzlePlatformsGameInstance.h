@@ -18,6 +18,9 @@ public:
 
 	UPuzzlePlatformsGameInstance(const FObjectInitializer & ObjectInitializer);
 
+	UFUNCTION(BlueprintCallable)
+		void LoadMenu();
+
 	UFUNCTION(Exec)
 		void Host();
 
@@ -27,4 +30,7 @@ public:
 protected:
 
 	virtual void Init() override;
+
+private:
+	TSubclassOf<class UUserWidget> menuClass;
 };

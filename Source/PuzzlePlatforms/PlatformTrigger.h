@@ -14,6 +14,7 @@ class PUZZLEPLATFORMS_API APlatformTrigger : public AActor
 public:
 	// Sets default values for this actor's properties
 	APlatformTrigger();
+	~APlatformTrigger();
 
 protected:
 	// Called when the game starts or when spawned
