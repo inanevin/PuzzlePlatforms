@@ -15,7 +15,10 @@ class PUZZLEPLATFORMS_API UMainMenu : public UUserWidget
 {
 	GENERATED_BODY()
 
+
 public:
+
+	UMainMenu(const FObjectInitializer& ObjectInitializer);
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 		class UButton* hostButton;
@@ -33,10 +36,13 @@ public:
 		class UButton* exitButton;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-		class UWidgetSwitcher* switcher;
-	
+		class UButton* refreshServerListButton;
+
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-		class UEditableText* ipText;
+		class UScrollBox* serverList;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+		class UWidgetSwitcher* switcher;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 		class UWidget* MainMenu;
@@ -46,6 +52,7 @@ public:
 
 	void SetMenuInterface(IMenuInterface* mi);
 	void Setup();
+	void PopulateServerList(const TArray<FString>& sessionIDs);
 
 protected:
 
@@ -69,5 +76,11 @@ private:
 	UFUNCTION()
 		void ExitButtonClicked();
 
+	UFUNCTION()
+		void RefreshServerListButtonClicked();
+
 	IMenuInterface* menuInterface;
+
+	TSubclassOf<class UUserWidget> serverListElementClass;
+
 };

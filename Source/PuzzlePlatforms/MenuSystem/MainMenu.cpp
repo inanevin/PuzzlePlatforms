@@ -4,6 +4,19 @@
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
 #include "Components/EditableText.h"
+#include "Components/ScrollBox.h"
+#include "ServerListElement.h"
+#include "ConstructorHelpers.h"
+
+UMainMenu::UMainMenu(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+{
+	ConstructorHelpers::FClassFinder<UUserWidget> ServerListElementWidget(TEXT("/Game/MenuSystem/WBP_ServerListElement"));
+
+	if (!ensure(ServerListElementWidget.Class != nullptr)) return;
+
+	serverListElementClass = ServerListElementWidget.Class;
+
+}
 
 bool UMainMenu::Initialize()
 {
@@ -16,6 +29,8 @@ bool UMainMenu::Initialize()
 	joinIPButton->OnClicked.AddDynamic(this, &UMainMenu::JoinIPButtonClicked);
 	backButton->OnClicked.AddDynamic(this, &UMainMenu::BackButtonClicked);
 	exitButton->OnClicked.AddDynamic(this, &UMainMenu::ExitButtonClicked);
+	refreshServerListButton->OnClicked.AddDynamic(this, &UMainMenu::RefreshServerListButtonClicked);
+
 	return true;
 }
 
@@ -40,7 +55,7 @@ void UMainMenu::OnLevelRemovedFromWorld(ULevel * inLevel, UWorld * inWorld)
 
 void UMainMenu::HostButtonClicked()
 {
-;	if (!ensure(menuInterface != nullptr)) return;
+	if (!ensure(menuInterface != nullptr)) return;
 	menuInterface->Host();
 }
 
@@ -52,13 +67,19 @@ void UMainMenu::JoinButtonClicked()
 
 void UMainMenu::JoinIPButtonClicked()
 {
-	FText addr = ipText->GetText();
-	menuInterface->Join(addr.ToString());
+	//FText addr = ipText->GetText();
+	//menuInterface->Join(addr.ToString());
 }
 
 void UMainMenu::BackButtonClicked()
 {
 	switcher->SetActiveWidget(MainMenu);
+}
+
+void UMainMenu::RefreshServerListButtonClicked()
+{
+	if (!ensure(menuInterface != nullptr)) return;
+	menuInterface->SearchForSessions();
 }
 
 void UMainMenu::ExitButtonClicked()
@@ -73,6 +94,8 @@ void UMainMenu::ExitButtonClicked()
 
 	playerController->ConsoleCommand(TEXT("quit"), true);
 }
+
+
 
 void UMainMenu::Setup()
 {
@@ -93,6 +116,21 @@ void UMainMenu::Setup()
 
 	playerController->SetInputMode(inputMode);
 	playerController->bShowMouseCursor = true;
+}
+
+void UMainMenu::PopulateServerList(const TArray<FString>& sessionIDs)
+{
+	if (serverListElementClass == nullptr) return;
+
+	serverList->ClearChildren();
+
+	for (int i = 0; i < sessionIDs.Num(); i++)
+	{
+		UServerListElement* widget = CreateWidget<UServerListElement>(this, serverListElementClass);
+		widget->SetServerName(FText::FromString(sessionIDs[i]));
+		serverList->AddChild(widget);
+	}
+	
 }
 
 void UMainMenu::SetMenuInterface(IMenuInterface* mi)

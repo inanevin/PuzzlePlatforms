@@ -31,7 +31,7 @@ public:
 	virtual void Host() override;
 	virtual void Join(const FString& address) override;
 	virtual void GoToMainMenu() override;
-
+	virtual void SearchForSessions() override;
 
 protected:
 
@@ -44,6 +44,8 @@ private:
 	TSubclassOf<class UUserWidget> inGameMenuClass;
 	class UInGameMenu* inGameMenu;
 	class UMainMenu* mainMenu;
+
+
 	IOnlineSessionPtr sessionInterface;
 	TSharedPtr<class FOnlineSessionSearch> sessionSearch;
 
