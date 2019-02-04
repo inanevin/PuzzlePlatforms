@@ -26,7 +26,12 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 		class UButton* serverElementButton;
 
+	UPROPERTY(BlueprintReadOnly)
+		bool isSelected;
+
 private:
+
+
 
 	UFUNCTION()
 		void ElementClicked();

@@ -84,6 +84,11 @@ void UPuzzlePlatformsGameInstance::OnFindSessionsComplete(bool success)
 		UE_LOG(LogTemp, Warning, TEXT("Search result %d %s"), i, *sessionID);
 	}
 
+
+	sessionIDs.Add("Test Server 1");
+	sessionIDs.Add("Test Server 2");
+	sessionIDs.Add("Test Server 3");
+
 	mainMenu->PopulateServerList(sessionIDs);
 }
 

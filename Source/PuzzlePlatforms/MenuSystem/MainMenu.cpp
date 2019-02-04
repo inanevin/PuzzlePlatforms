@@ -142,4 +142,17 @@ void UMainMenu::PopulateServerList(const TArray<FString>& sessionIDs)
 void UMainMenu::SetMenuInterface(IMenuInterface* mi)
 {
 	menuInterface = mi;
+	UpdateServerRows();
+}
+
+void UMainMenu::UpdateServerRows()
+{
+	for (int32 i = 0; i < serverList->GetChildrenCount(); ++i)
+	{
+		UServerListElement* row = Cast<UServerListElement>(serverList->GetChildAt(i));
+		if (row != nullptr)
+		{
+			row->isSelected = (selectedServerRow.IsSet() && selectedServerRow.GetValue() == i);
+		}
+	}
 }

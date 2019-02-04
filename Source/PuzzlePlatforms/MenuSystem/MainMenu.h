@@ -86,4 +86,5 @@ private:
 
 	TOptional<uint32> selectedServerRow;
 
+	void UpdateServerRows();
 };
