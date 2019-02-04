@@ -12,6 +12,7 @@
 
 
 const static FName SESSION_NAME = TEXT("Test_Session2");
+const static int MAX_SEARCH_RESULTS = 1000;
 
 UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitializer & ObjectInitializer)
 {
@@ -100,8 +101,13 @@ void UPuzzlePlatformsGameInstance::OnJoinSessionComplete(FName sessionName, EOnJ
 	{
 		FString travelURL;
 		FName portType;
-		sessionInterface->GetResolvedConnectString(sessionSearch->SearchResults[lastSessionSearchResult], portType, travelURL);
-		playerController->ClientTravel(travelURL, ETravelType::TRAVEL_Absolute);
+
+		if (sessionInterface->GetResolvedConnectString(SESSION_NAME, travelURL))
+		{
+			playerController->ClientTravel(travelURL, ETravelType::TRAVEL_Absolute);
+		}
+		else
+			UE_LOG(LogTemp, Warning, TEXT("COULD NOT JOIN SESSION"));
 	}
 
 
@@ -113,9 +119,10 @@ void UPuzzlePlatformsGameInstance::CreateSession()
 	if (!sessionInterface.IsValid()) return;
 
 	FOnlineSessionSettings sessionSettings;
-	sessionSettings.bIsLANMatch = true;
+	sessionSettings.bIsLANMatch = false;
 	sessionSettings.NumPublicConnections = 2;
 	sessionSettings.bShouldAdvertise = true;
+	sessionSettings.bUsesPresence = true;	// use lobies instead of steam servers.
 	sessionInterface->CreateSession(0, SESSION_NAME, sessionSettings);
 }
 
@@ -166,14 +173,12 @@ void UPuzzlePlatformsGameInstance::Host()
 
 void UPuzzlePlatformsGameInstance::Join(uint32 index)
 {
-	//APlayerController* playerController = GetFirstLocalPlayerController();
 
 	if (!sessionInterface.IsValid()) return;
 	if (!sessionSearch.IsValid()) return;
 
-	sessionInterface->JoinSession(0, SESSION_NAME, sessionSearch->SearchResults[index]);
 	lastSessionSearchResult = index;
-	//playerController->ClientTravel(address, ETravelType::TRAVEL_Absolute);
+	sessionInterface->JoinSession(0, SESSION_NAME, sessionSearch->SearchResults[index]);
 
 }
 
@@ -193,6 +198,10 @@ void UPuzzlePlatformsGameInstance::SearchForSessions()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Session search started!"));
 		TSharedRef<FOnlineSessionSearch> sessionSearchRef = sessionSearch.ToSharedRef();
+		bool presenseSearch = false;
+
+		sessionSearch->MaxSearchResults = MAX_SEARCH_RESULTS;
+		sessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
 		sessionInterface->FindSessions(0, sessionSearch.ToSharedRef());
 	}
 }
