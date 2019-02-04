@@ -45,6 +45,9 @@
 SourceArt/**/*.png
 SourceArt/**/*.tga
 
+#Steam
+steamworks_sdk_142
+
 # Binary Files
 Binaries/*
 Plugins/*/Binaries/*
