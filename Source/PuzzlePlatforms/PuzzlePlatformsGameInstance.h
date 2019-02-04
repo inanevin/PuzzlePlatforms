@@ -45,8 +45,10 @@ private:
 	class UInGameMenu* inGameMenu;
 	class UMainMenu* mainMenu;
 	IOnlineSessionPtr sessionInterface;
+	TSharedPtr<class FOnlineSessionSearch> sessionSearch;
 
 	void OnCreateSessionComplete(FName sessionName, bool success);
 	void OnDestroySessionComplete(FName sessionName, bool success);
+	void OnFindSessionsComplete(bool success);
 	void CreateSession();
 };

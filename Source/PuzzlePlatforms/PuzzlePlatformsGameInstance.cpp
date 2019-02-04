@@ -11,6 +11,7 @@
 #include "OnlineSessionInterface.h"
 #include "OnlineSessionSettings.h"
 
+
 const static FName SESSION_NAME = TEXT("Session Name");
 
 UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitializer & ObjectInitializer)
@@ -40,6 +41,17 @@ void UPuzzlePlatformsGameInstance::Init()
 		{
 			sessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnCreateSessionComplete);
 			sessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnDestroySessionComplete);
+			sessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnFindSessionsComplete);
+
+			sessionSearch = MakeShareable(new FOnlineSessionSearch());
+
+			if (sessionSearch.IsValid())
+			{
+				TSharedRef<FOnlineSessionSearch> sessionSearchRef = sessionSearch.ToSharedRef();
+				sessionInterface->FindSessions(0, sessionSearchRef);
+				UE_LOG(LogTemp, Warning, TEXT("Session search started!"));
+			}
+			
 		}
 	}
 }
@@ -63,6 +75,11 @@ void UPuzzlePlatformsGameInstance::OnCreateSessionComplete(FName sessionName, bo
 	if (!ensure(world != nullptr)) return;
 
 	world->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen");
+}
+
+void UPuzzlePlatformsGameInstance::OnFindSessionsComplete(bool success)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Session search finished!"));
 }
 
 void UPuzzlePlatformsGameInstance::OnDestroySessionComplete(FName sessionName, bool success)
