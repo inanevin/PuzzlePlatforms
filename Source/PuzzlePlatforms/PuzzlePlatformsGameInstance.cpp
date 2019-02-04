@@ -8,11 +8,10 @@
 #include "Blueprint/UserWidget.h"
 #include "MenuSystem/MainMenu.h"
 #include "MenuSystem/InGameMenu.h"
-#include "OnlineSessionInterface.h"
 #include "OnlineSessionSettings.h"
 
 
-const static FName SESSION_NAME = TEXT("Test_Session");
+const static FName SESSION_NAME = TEXT("Test_Session2");
 
 UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitializer & ObjectInitializer)
 {
@@ -39,9 +38,9 @@ void UPuzzlePlatformsGameInstance::Init()
 			sessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnCreateSessionComplete);
 			sessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnDestroySessionComplete);
 			sessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnFindSessionsComplete);
+			sessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnJoinSessionComplete);
 
-			
-			
+
 			SearchForSessions();
 
 		}
@@ -91,6 +90,22 @@ void UPuzzlePlatformsGameInstance::OnDestroySessionComplete(FName sessionName, b
 {
 	if (!success) return;
 	CreateSession();
+}
+
+void UPuzzlePlatformsGameInstance::OnJoinSessionComplete(FName sessionName, EOnJoinSessionCompleteResult::Type result)
+{
+	APlayerController* playerController = GetFirstLocalPlayerController();
+
+	if (playerController != nullptr && sessionInterface.IsValid())
+	{
+		FString travelURL;
+		FName portType;
+		sessionInterface->GetResolvedConnectString(sessionSearch->SearchResults[lastSessionSearchResult], portType, travelURL);
+		playerController->ClientTravel(travelURL, ETravelType::TRAVEL_Absolute);
+	}
+
+
+
 }
 
 void UPuzzlePlatformsGameInstance::CreateSession()
@@ -145,23 +160,20 @@ void UPuzzlePlatformsGameInstance::Host()
 		{
 			CreateSession();
 		}
-	
+
 	}
 }
 
-void UPuzzlePlatformsGameInstance::Join(const FString& address)
+void UPuzzlePlatformsGameInstance::Join(uint32 index)
 {
-	UEngine* engine = GetEngine();
+	//APlayerController* playerController = GetFirstLocalPlayerController();
 
-	if (!ensure(engine != nullptr)) return;
+	if (!sessionInterface.IsValid()) return;
+	if (!sessionSearch.IsValid()) return;
 
-	engine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Joining %s"), *address));
-
-	APlayerController* playerController = GetFirstLocalPlayerController();
-
-	if (!ensure(engine != nullptr)) return;
-
-	playerController->ClientTravel(address, ETravelType::TRAVEL_Absolute);
+	sessionInterface->JoinSession(0, SESSION_NAME, sessionSearch->SearchResults[index]);
+	lastSessionSearchResult = index;
+	//playerController->ClientTravel(address, ETravelType::TRAVEL_Absolute);
 
 }
 
@@ -170,7 +182,7 @@ void UPuzzlePlatformsGameInstance::GoToMainMenu()
 
 	APlayerController* PlayerController = GetFirstLocalPlayerController();
 	if (!ensure(PlayerController != nullptr)) return;
-	
+
 	PlayerController->ClientTravel("/Game/PuzzlePlatforms/Maps/MainMenu", ETravelType::TRAVEL_Absolute);
 }
 

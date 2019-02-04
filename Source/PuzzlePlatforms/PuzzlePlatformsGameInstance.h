@@ -6,6 +6,7 @@
 #include "Engine/GameInstance.h"
 #include "OnlineSubsystem.h"
 #include "MenuSystem/MenuInterface.h"
+#include "OnlineSessionInterface.h"
 #include "PuzzlePlatformsGameInstance.generated.h"
 
 /**
@@ -29,7 +30,7 @@ public:
 		
 
 	virtual void Host() override;
-	virtual void Join(const FString& address) override;
+	virtual void Join(uint32 index) override;
 	virtual void GoToMainMenu() override;
 	virtual void SearchForSessions() override;
 
@@ -51,6 +52,9 @@ private:
 
 	void OnCreateSessionComplete(FName sessionName, bool success);
 	void OnDestroySessionComplete(FName sessionName, bool success);
+	void OnJoinSessionComplete(FName sessionName, EOnJoinSessionCompleteResult::Type result);
 	void OnFindSessionsComplete(bool success);
 	void CreateSession();
+
+	uint32 lastSessionSearchResult;
 };

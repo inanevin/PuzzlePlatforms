@@ -67,8 +67,13 @@ void UMainMenu::JoinButtonClicked()
 
 void UMainMenu::JoinIPButtonClicked()
 {
-	//FText addr = ipText->GetText();
-	//menuInterface->Join(addr.ToString());
+	if (selectedServerRow.IsSet() && menuInterface != nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Selected index is %d"), selectedServerRow.GetValue());
+		menuInterface->Join(selectedServerRow.GetValue());
+	}
+	else
+		UE_LOG(LogTemp, Warning, TEXT("Selected index is not set."));
 }
 
 void UMainMenu::BackButtonClicked()
@@ -123,14 +128,15 @@ void UMainMenu::PopulateServerList(const TArray<FString>& sessionIDs)
 	if (serverListElementClass == nullptr) return;
 
 	serverList->ClearChildren();
+	selectedServerRow.Reset();
 
 	for (int i = 0; i < sessionIDs.Num(); i++)
 	{
 		UServerListElement* widget = CreateWidget<UServerListElement>(this, serverListElementClass);
-		widget->SetServerName(FText::FromString(sessionIDs[i]));
 		serverList->AddChild(widget);
+		widget->Setup(this, i, FText::FromString(sessionIDs[i]));
 	}
-	
+
 }
 
 void UMainMenu::SetMenuInterface(IMenuInterface* mi)

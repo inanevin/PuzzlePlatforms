@@ -53,6 +53,7 @@ public:
 	void SetMenuInterface(IMenuInterface* mi);
 	void Setup();
 	void PopulateServerList(const TArray<FString>& sessionIDs);
+	inline void SetSelectedIndex(uint32 index) { selectedServerRow = index; }
 
 protected:
 
@@ -82,5 +83,7 @@ private:
 	IMenuInterface* menuInterface;
 
 	TSubclassOf<class UUserWidget> serverListElementClass;
+
+	TOptional<uint32> selectedServerRow;
 
 };

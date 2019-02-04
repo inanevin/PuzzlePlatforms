@@ -13,11 +13,24 @@ UCLASS()
 class PUZZLEPLATFORMS_API UServerListElement : public UUserWidget
 {
 	GENERATED_BODY()
+
+
+
 public:
 
-	void SetServerName(const FText& serverName);
+	void Setup(class UMainMenu* parent, uint32 index, const FText& serverName);
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 		class UTextBlock* serverName;
 
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+		class UButton* serverElementButton;
+
+private:
+
+	UFUNCTION()
+		void ElementClicked();
+	
+	uint32 m_Index;
+	UMainMenu* parentMenu;
 };
