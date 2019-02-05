@@ -29,7 +29,7 @@ public:
 
 		
 
-	virtual void Host() override;
+	virtual void Host(const FString& serverName) override;
 	virtual void Join(uint32 index) override;
 	virtual void GoToMainMenu() override;
 	virtual void SearchForSessions() override;
@@ -57,4 +57,5 @@ private:
 	void CreateSession();
 
 	uint32 lastSessionSearchResult;
+	FString desiredServerName;
 };

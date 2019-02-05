@@ -13,7 +13,7 @@
 
 const static FName SESSION_NAME = TEXT("Test_Session2");
 const static int MAX_SEARCH_RESULTS = 1000;
-
+const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitializer & ObjectInitializer)
 {
 
@@ -81,12 +81,18 @@ void UPuzzlePlatformsGameInstance::OnFindSessionsComplete(bool success)
 	{
 		FString sessionID = sessionSearch->SearchResults[i].GetSessionIdStr();
 		FServerData data;
-		data.serverName = sessionSearch->SearchResults[i].GetSessionIdStr();
+		FString serverName;
+
+		if (sessionSearch->SearchResults[i].Session.SessionSettings.Get(SERVER_NAME_SETTINGS_KEY, serverName))
+			data.serverName = serverName;
+		else
+			data.serverName = "User {0}";
+
 		data.hostUserName = sessionSearch->SearchResults[i].Session.OwningUserName;
-		data.currentPlayers = sessionSearch->SearchResults[i].Session.NumOpenPrivateConnections;
 		data.maxPlayers = sessionSearch->SearchResults[i].Session.SessionSettings.NumPublicConnections;
+		data.currentPlayers = data.maxPlayers - sessionSearch->SearchResults[i].Session.NumOpenPrivateConnections;
 		sessionIDs.Add(data);
-		UE_LOG(LogTemp, Warning, TEXT("Search result %d %s"), i, *sessionID);
+		UE_LOG(LogTemp, Warning, TEXT("Search result %d %s custom search result %s"), i, *sessionID);
 	}
 
 
@@ -138,6 +144,7 @@ void UPuzzlePlatformsGameInstance::CreateSession()
 	sessionSettings.NumPublicConnections = 2;
 	sessionSettings.bShouldAdvertise = true;
 	sessionSettings.bUsesPresence = true;	// use lobies instead of steam servers.
+	sessionSettings.Set(SERVER_NAME_SETTINGS_KEY, desiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	sessionInterface->CreateSession(0, SESSION_NAME, sessionSettings);
 }
 
@@ -168,8 +175,10 @@ void UPuzzlePlatformsGameInstance::LoadInGameMenu()
 
 }
 
-void UPuzzlePlatformsGameInstance::Host()
+void UPuzzlePlatformsGameInstance::Host(const FString& serverName)
 {
+	desiredServerName = serverName;
+
 	if (sessionInterface.IsValid())
 	{
 		FNamedOnlineSession* existingSession = sessionInterface->GetNamedSession(SESSION_NAME);

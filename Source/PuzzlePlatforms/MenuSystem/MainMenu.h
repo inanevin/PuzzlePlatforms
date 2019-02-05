@@ -45,6 +45,9 @@ public:
 		class UButton* backButton;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+		class UEditableText* serverNameText;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 		class UButton* exitButton;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
