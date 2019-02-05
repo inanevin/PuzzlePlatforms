@@ -53,7 +53,8 @@ public:
 	void SetMenuInterface(IMenuInterface* mi);
 	void Setup();
 	void PopulateServerList(const TArray<FString>& sessionIDs);
-	inline void SetSelectedIndex(uint32 index) { selectedServerRow = index; }
+	void SetSelectedIndex(uint32 index);
+
 
 protected:
 

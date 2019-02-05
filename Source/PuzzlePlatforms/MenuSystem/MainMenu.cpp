@@ -21,7 +21,7 @@ UMainMenu::UMainMenu(const FObjectInitializer& ObjectInitializer) : Super(Object
 bool UMainMenu::Initialize()
 {
 	if (!Super::Initialize()) return false;
-	
+
 	if (!ensure(hostButton != nullptr)) return false;
 
 	hostButton->OnClicked.AddDynamic(this, &UMainMenu::HostButtonClicked);
@@ -142,7 +142,7 @@ void UMainMenu::PopulateServerList(const TArray<FString>& sessionIDs)
 void UMainMenu::SetMenuInterface(IMenuInterface* mi)
 {
 	menuInterface = mi;
-	UpdateServerRows();
+
 }
 
 void UMainMenu::UpdateServerRows()
@@ -155,4 +155,10 @@ void UMainMenu::UpdateServerRows()
 			row->isSelected = (selectedServerRow.IsSet() && selectedServerRow.GetValue() == i);
 		}
 	}
+}
+
+void UMainMenu::SetSelectedIndex(uint32 index)
+{
+	selectedServerRow = index;
+	UpdateServerRows();
 }
