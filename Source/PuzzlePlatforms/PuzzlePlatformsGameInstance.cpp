@@ -75,19 +75,20 @@ void UPuzzlePlatformsGameInstance::OnFindSessionsComplete(bool success)
 
 	if (!success || !sessionSearch.IsValid()) return;
 
-	TArray<FString> sessionIDs;
+	TArray<FServerData> sessionIDs;
 
 	for (int i = 0; i < sessionSearch->SearchResults.Num(); i++)
 	{
 		FString sessionID = sessionSearch->SearchResults[i].GetSessionIdStr();
-		sessionIDs.Add(sessionID);
+		FServerData data;
+		data.serverName = sessionSearch->SearchResults[i].GetSessionIdStr();
+		data.hostUserName = sessionSearch->SearchResults[i].Session.OwningUserName;
+		data.currentPlayers = sessionSearch->SearchResults[i].Session.NumOpenPrivateConnections;
+		data.maxPlayers = sessionSearch->SearchResults[i].Session.SessionSettings.NumPublicConnections;
+		sessionIDs.Add(data);
 		UE_LOG(LogTemp, Warning, TEXT("Search result %d %s"), i, *sessionID);
 	}
 
-
-	sessionIDs.Add("Test Server 1");
-	sessionIDs.Add("Test Server 2");
-	sessionIDs.Add("Test Server 3");
 
 	mainMenu->PopulateServerList(sessionIDs);
 }
@@ -124,7 +125,16 @@ void UPuzzlePlatformsGameInstance::CreateSession()
 	if (!sessionInterface.IsValid()) return;
 
 	FOnlineSessionSettings sessionSettings;
-	sessionSettings.bIsLANMatch = false;
+
+	if (IOnlineSubsystem::Get()->GetSubsystemName() == "NULL")
+	{
+		sessionSettings.bIsLANMatch = true;
+	}
+	else
+	{
+		sessionSettings.bIsLANMatch = false;
+	}
+
 	sessionSettings.NumPublicConnections = 2;
 	sessionSettings.bShouldAdvertise = true;
 	sessionSettings.bUsesPresence = true;	// use lobies instead of steam servers.
@@ -203,7 +213,6 @@ void UPuzzlePlatformsGameInstance::SearchForSessions()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Session search started!"));
 		TSharedRef<FOnlineSessionSearch> sessionSearchRef = sessionSearch.ToSharedRef();
-		bool presenseSearch = false;
 
 		sessionSearch->MaxSearchResults = MAX_SEARCH_RESULTS;
 		sessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);

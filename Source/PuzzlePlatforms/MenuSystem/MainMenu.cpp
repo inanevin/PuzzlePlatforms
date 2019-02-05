@@ -123,7 +123,7 @@ void UMainMenu::Setup()
 	playerController->bShowMouseCursor = true;
 }
 
-void UMainMenu::PopulateServerList(const TArray<FString>& sessionIDs)
+void UMainMenu::PopulateServerList(const TArray<FServerData>& sessionIDs)
 {
 	if (serverListElementClass == nullptr) return;
 
@@ -134,7 +134,7 @@ void UMainMenu::PopulateServerList(const TArray<FString>& sessionIDs)
 	{
 		UServerListElement* widget = CreateWidget<UServerListElement>(this, serverListElementClass);
 		serverList->AddChild(widget);
-		widget->Setup(this, i, FText::FromString(sessionIDs[i]));
+		widget->Setup(this, i, FText::FromString(sessionIDs[i].serverName), FText::FromString(sessionIDs[i].hostUserName), sessionIDs[i].currentPlayers, sessionIDs[i].maxPlayers);
 	}
 
 }

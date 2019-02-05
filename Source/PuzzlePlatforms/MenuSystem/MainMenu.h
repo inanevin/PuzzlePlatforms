@@ -7,6 +7,18 @@
 #include "MenuInterface.h"
 #include "MainMenu.generated.h"
 
+USTRUCT()
+struct FServerData
+{
+	GENERATED_BODY()
+
+	FString serverName;
+	FString hostUserName;
+	uint16 currentPlayers;
+	uint16 maxPlayers;
+
+};
+
 /**
  *
  */
@@ -52,7 +64,7 @@ public:
 
 	void SetMenuInterface(IMenuInterface* mi);
 	void Setup();
-	void PopulateServerList(const TArray<FString>& sessionIDs);
+	void PopulateServerList(const TArray<FServerData>& sessionIDs);
 	void SetSelectedIndex(uint32 index);
 
 
