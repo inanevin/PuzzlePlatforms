@@ -27,12 +27,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void LoadInGameMenu();
 
+
 		
 
 	virtual void Host(const FString& serverName) override;
 	virtual void Join(uint32 index) override;
 	virtual void GoToMainMenu() override;
 	virtual void SearchForSessions() override;
+	virtual bool CancelFindSessions() override;
+	void StartSession();
 
 protected:
 
@@ -45,6 +48,7 @@ private:
 	TSubclassOf<class UUserWidget> inGameMenuClass;
 	class UInGameMenu* inGameMenu;
 	class UMainMenu* mainMenu;
+	
 
 
 	IOnlineSessionPtr sessionInterface;

@@ -27,4 +27,5 @@ public:
 	virtual void Join(uint32 index) = 0;
 	virtual void GoToMainMenu() = 0;
 	virtual void SearchForSessions() = 0;
+	virtual bool CancelFindSessions() = 0;
 };

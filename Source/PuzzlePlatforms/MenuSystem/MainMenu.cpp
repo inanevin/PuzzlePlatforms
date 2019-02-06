@@ -56,6 +56,7 @@ void UMainMenu::OnLevelRemovedFromWorld(ULevel * inLevel, UWorld * inWorld)
 void UMainMenu::HostButtonClicked()
 {
 	if (!ensure(menuInterface != nullptr)) return;
+	menuInterface->CancelFindSessions();
 	menuInterface->Host(serverNameText->GetText().ToString());
 }
 

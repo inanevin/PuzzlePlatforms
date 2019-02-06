@@ -11,7 +11,7 @@
 #include "OnlineSessionSettings.h"
 
 
-const static FName SESSION_NAME = TEXT("Test_Session2");
+const static FName SESSION_NAME = NAME_GameSession;
 const static int MAX_SEARCH_RESULTS = 1000;
 const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitializer & ObjectInitializer)
@@ -23,7 +23,6 @@ UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitiali
 
 	menuClass = MenuWidget.Class;
 	inGameMenuClass = InGameMenuWidget.Class;
-
 }
 
 void UPuzzlePlatformsGameInstance::Init()
@@ -66,14 +65,14 @@ void UPuzzlePlatformsGameInstance::OnCreateSessionComplete(FName sessionName, bo
 
 	if (!ensure(world != nullptr)) return;
 
-	world->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen");
+	world->ServerTravel("/Game/PuzzlePlatforms/Maps/Lobby?listen");
 }
 
 void UPuzzlePlatformsGameInstance::OnFindSessionsComplete(bool success)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Session search finished!"));
 
-	if (!success || !sessionSearch.IsValid()) return;
+	if (!success || !sessionSearch.IsValid() || mainMenu == nullptr) return;
 
 	TArray<FServerData> sessionIDs;
 
@@ -90,7 +89,7 @@ void UPuzzlePlatformsGameInstance::OnFindSessionsComplete(bool success)
 
 		data.hostUserName = sessionSearch->SearchResults[i].Session.OwningUserName;
 		data.maxPlayers = sessionSearch->SearchResults[i].Session.SessionSettings.NumPublicConnections;
-		data.currentPlayers = data.maxPlayers - sessionSearch->SearchResults[i].Session.NumOpenPrivateConnections;
+		data.currentPlayers = data.maxPlayers - sessionSearch->SearchResults[i].Session.NumOpenPublicConnections;
 		sessionIDs.Add(data);
 		UE_LOG(LogTemp, Warning, TEXT("Search result %d %s custom search result %s"), i, *sessionID);
 	}
@@ -116,7 +115,8 @@ void UPuzzlePlatformsGameInstance::OnJoinSessionComplete(FName sessionName, EOnJ
 
 		if (sessionInterface->GetResolvedConnectString(SESSION_NAME, travelURL))
 		{
-			playerController->ClientTravel(travelURL, ETravelType::TRAVEL_Absolute);
+			if (result != EOnJoinSessionCompleteResult::Success)
+				playerController->ClientTravel(travelURL, ETravelType::TRAVEL_Absolute);
 		}
 		else
 			UE_LOG(LogTemp, Warning, TEXT("COULD NOT JOIN SESSION"));
@@ -141,7 +141,7 @@ void UPuzzlePlatformsGameInstance::CreateSession()
 		sessionSettings.bIsLANMatch = false;
 	}
 
-	sessionSettings.NumPublicConnections = 2;
+	sessionSettings.NumPublicConnections = 3;
 	sessionSettings.bShouldAdvertise = true;
 	sessionSettings.bUsesPresence = true;	// use lobies instead of steam servers.
 	sessionSettings.Set(SERVER_NAME_SETTINGS_KEY, desiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
@@ -227,4 +227,15 @@ void UPuzzlePlatformsGameInstance::SearchForSessions()
 		sessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
 		sessionInterface->FindSessions(0, sessionSearch.ToSharedRef());
 	}
+}
+
+bool UPuzzlePlatformsGameInstance::CancelFindSessions()
+{
+	return sessionInterface->CancelFindSessions();
+}
+
+void UPuzzlePlatformsGameInstance::StartSession()
+{
+	if (sessionInterface.IsValid())
+		sessionInterface->StartSession(SESSION_NAME);
 }
